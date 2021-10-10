@@ -1,11 +1,9 @@
-local secrets = require 'github-notifications.secrets'
-
 local M = {}
 
 local defaults = {
 	debounce_duration = 60, -- Minimum time until next refresh
-	username = secrets.username, -- GitHub username
-	token = secrets.token, -- Your personal access token with `notifications` scope
+	username = nil, -- GitHub username
+	token = nil, -- Your personal access token with `notifications` scope
 	icon = '', -- Icon to be shown in statusline
 	mappings = {
 		mark_read = '<CR>',
