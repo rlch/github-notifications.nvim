@@ -7,6 +7,6 @@ end
 
 return telescope.register_extension {
 	exports = {
-		github_notifications = menu.notifications,
+		ghn = menu.notifications,
 	},
 }
