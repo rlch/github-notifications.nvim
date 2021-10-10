@@ -34,6 +34,8 @@ require('github-notifications').setup {
 }
 ```
 
+`token` is a personal access token with the `Notifications` scope. You can make one [here](https://github.com/settings/tokens)
+
 **Default config**:
 
 ```lua
