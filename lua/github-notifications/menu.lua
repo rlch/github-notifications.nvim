@@ -62,11 +62,8 @@ M.notifications = function(opts)
 	for k, v in pairs(ghn.notifications) do
 		if not ghn.ignore[v] then
 			results[k] = v
-    else
-      print(v.subject.title)
 		end
 	end
-  print('results: ' .. tostring(#results))
 	opts = opts and not vim.tbl_isempty(opts) and opts or themes.get_dropdown {}
 
 	pickers.new(opts, {
