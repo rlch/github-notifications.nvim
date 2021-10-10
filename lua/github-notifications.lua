@@ -112,7 +112,7 @@ M.statusline_notification_count = function()
 		M.refresh()
 	end
 	print("after non nill")
-	return config.icon .. " " .. tostring(M.notification_count)
+	return config.get("icon") .. " " .. tostring(M.notification_count)
 end
 
 return M
