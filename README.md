@@ -15,7 +15,6 @@ use {
   config = [[require('config.github-notifications')]],
   requires = {
     'nvim-lua/plenary.nvim',
-    'hoob3rt/lualine.nvim',
     'nvim-telescope/telescope.nvim',
   },
 }
