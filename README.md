@@ -3,7 +3,7 @@
 A lightweight, unobstructive, yet WIP neovim plugin for viewing GitHub notifications in your statusline + Telescope popup.
 All requests are processed asynchronously, debounced and cached to ensure no delays in your UI! :rocket:
 
-![Preview](https://imgur.com/F6CzZ8O)
+![Preview](https://imgur.com/F6CzZ8O.png)
 
 ## Installation
 
@@ -52,7 +52,7 @@ local defaults = {
 
 ### Lua-based statusline 
 
-![Statusline](https://imgur.com/4JAnmvE)
+![Statusline](https://imgur.com/4JAnmvE.png)
 
 I've only tested this with [lualine](https://github.com/hoob3rt/lualine.nvim), but it should work with any Lua-based statusline that takes a Lua function as an argument for displaying data.
 
