@@ -11,8 +11,8 @@ M.read_notification = function(notification)
 	for k, v in pairs(ghn.notifications) do
 		if v == notification.value then
 			ghn.notifications[k].unread = false
-      -- Hide the next time the popup is opened
-			ghn.ignore[v] = true
+      -- Hide the next time the popup is opened (WIP)
+			-- ghn.ignore[v] = true
 		end
 	end
 end
