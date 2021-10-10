@@ -6,6 +6,7 @@ local defaults = {
 	debounce_duration = 60,
 	username = secrets.username,
 	token = secrets.token,
+	icon = "",
 }
 local mt = { __index = defaults }
 local config = setmetatable({}, mt)
@@ -19,10 +20,10 @@ end
 
 M.set = function(user_config)
 	if not user_config or type(user_config) ~= "table" then
-    return config
+		return config
 	end
 	config = setmetatable(user_config, mt)
-  return config
+	return config
 end
 
 return M
