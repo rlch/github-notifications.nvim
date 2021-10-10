@@ -29,8 +29,8 @@ Simply call `setup` and you're good to go:
 local secrets = require 'secrets'
 
 require('github-notifications').setup {
-	username = secrets.username,
-	token = secrets.token,
+  username = secrets.username,
+  token = secrets.token,
 }
 ```
 
@@ -38,15 +38,15 @@ require('github-notifications').setup {
 
 ```lua
 local defaults = {
-	debounce_duration = 60, -- Minimum time until next refresh
-	username = nil, -- GitHub username
-	token = nil, -- Your personal access token with `notifications` scope
-	icon = '', -- Icon to be shown in statusline
-	mappings = {
-		mark_read = '<CR>',
-		-- open_in_browser = 'o', (WIP)
-		-- hide = 'd', (WIP)
-	},
+  debounce_duration = 60, -- Minimum time until next refresh
+  username = nil, -- GitHub username
+  token = nil, -- Your personal access token with `notifications` scope
+  icon = '', -- Icon to be shown in statusline
+  mappings = {
+    mark_read = '<CR>',
+    -- open_in_browser = 'o', (WIP)
+    -- hide = 'd', (WIP)
+  },
 }
 ```
 
@@ -59,11 +59,11 @@ I've only tested this with [lualine](https://github.com/hoob3rt/lualine.nvim), b
 ```lua
 require('lualine').setup {
   ...
-	sections = {
+  sections = {
     ...
-		lualine_b = { 'branch', require('github-notifications').statusline_notification_count },
+    lualine_b = { 'branch', require('github-notifications').statusline_notification_count },
     ...
-	},
+  },
   ...
 }
 ```
