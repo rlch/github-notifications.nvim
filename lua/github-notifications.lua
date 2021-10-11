@@ -3,7 +3,7 @@ local curl = require 'plenary.curl'
 local config = require 'github-notifications.config'
 local header = require 'github-notifications.utils.header'
 
-local M = { notification_count = 0, notifications = {}, ignore = {} }
+local M = { notifications = {}, ignore = {} }
 local state = nil
 
 -- Setup user configuration
@@ -38,13 +38,14 @@ M.refresh = function()
 	debounce(function()
 		a.run(a.async(function()
 			local previous_last_refresh = state.last_refresh
+			local if_modified_since = previous_last_refresh and header.last_modified(previous_last_refresh) or nil
 			state.last_refresh = os.time()
 
 			state.last_response = curl.get('https://api.github.com/notifications', {
 				accept = 'application/json',
 				auth = config.get 'username' .. ':' .. config.get 'token',
 				headers = {
-					if_modified_since = previous_last_refresh and header.last_modified(previous_last_refresh) or nil,
+					if_modified_since = if_modified_since,
 				},
 			})
 
@@ -54,21 +55,14 @@ M.refresh = function()
 			if status == 200 then
 				local json = vim.fn.json_decode(res.body)
 
-				for k, _ in pairs(M.notifications) do
-					M.notifications[k] = nil
-				end
-
-				local count = 0
 				for _, v in pairs(json) do
 					if M.ignore[v] then
 					else
-						table.insert(M.notifications, v)
 						if v ~= nil then
-							count = count + 1
+							table.insert(M.notifications, v)
 						end
 					end
 				end
-				M.notification_count = count
 
 				-- Reduce the debounce duration if necessary
 				for _, v in pairs(res.headers) do
@@ -88,6 +82,8 @@ M.refresh = function()
 			elseif status == 422 then
 				vim.notify('Validation failure', vim.log.levels.ERROR)
 			end
+
+			return
 		end, 1)())
 	end)()
 end
@@ -96,7 +92,7 @@ M.statusline_notification_count = function()
 	if state ~= nil then
 		M.refresh()
 	end
-	return config.get 'icon' .. ' ' .. tostring(M.notification_count)
+	return config.get 'icon' .. ' ' .. tostring(#M.notifications)
 end
 
 return M
