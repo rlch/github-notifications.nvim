@@ -96,6 +96,6 @@ I'm aware my API design is abysmal
 - [ ] Improve Telescope preview UI instead of being lazy with markdown
 - [ ] Hide notifications without Telescope shitting itself
 
-## Contributing :ok_hand
+## Contributing :ok_hand:
 
 Please lmao

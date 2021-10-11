@@ -1,4 +1,4 @@
-local a = require 'plenary.async'
+local a = require 'plenary.async_lib'
 local curl = require 'plenary.curl'
 local config = require 'github-notifications.config'
 local header = require 'github-notifications.utils.header'
@@ -36,7 +36,7 @@ end
 -- Makes a new get request to the notifications API, refreshing the state variables.
 M.refresh = function()
 	debounce(function()
-		local wrapped_request = a.wrap(function(callback)
+		a.run(a.async(function()
 			local previous_last_refresh = state.last_refresh
 			state.last_refresh = os.time()
 
@@ -47,11 +47,6 @@ M.refresh = function()
 					if_modified_since = previous_last_refresh and header.last_modified(previous_last_refresh) or nil,
 				},
 			})
-			callback()
-		end, 1)
-
-		local async_void = a.void(function(async_request)
-			async_request()
 
 			local res = state.last_response
 			local status = res.status
@@ -93,8 +88,7 @@ M.refresh = function()
 			elseif status == 422 then
 				vim.notify('Validation failure', vim.log.levels.ERROR)
 			end
-		end)
-		async_void(wrapped_request)
+		end, 1)())
 	end)()
 end
 
