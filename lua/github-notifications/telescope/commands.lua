@@ -1,20 +1,45 @@
+local a = require 'plenary.async'
+local Job = require 'plenary.job'
 local curl = require 'plenary.curl'
+
 local ghn = require 'github-notifications'
 local config = require 'github-notifications.config'
 
 local M = {}
 
 M.read_notification = function(notification)
-  curl.patch('https://api.github.com/notifications/threads/' .. tostring(notification.ordinal), {
-    auth = config.get 'username' .. ':' .. config.get 'token',
-  })
-  for k, v in pairs(ghn.notifications) do
-    if v == notification.value then
-      ghn.notifications[k].unread = false
-      -- Hide the next time the popup is opened (WIP)
-      -- ghn.ignore[v] = true
+  local id = notification.ordinal
+
+  a.run(
+    a.wrap(function(update_state_callback)
+      if ghn.gh_status == 1 then
+        local job = Job:new {
+          command = 'gh',
+          args = { 'api', 'notifications/threads/' .. tostring(id) },
+        }
+
+        job:after_success(vim.schedule_wrap(function()
+          update_state_callback()
+        end))
+
+        job:start()
+      else
+        curl.patch('https://api.github.com/notifications/threads/' .. tostring(id), {
+          auth = config.get 'username' .. ':' .. config.get 'token',
+        })
+        update_state_callback()
+      end
+    end, 1),
+    function()
+      for k, v in pairs(ghn.notifications) do
+        if v == notification.value then
+          ghn.notifications[k].unread = false
+          -- Hide the next time the popup is opened (WIP)
+          -- ghn.ignore[v] = true
+        end
+      end
     end
-  end
+  )
 end
 
 -- TODO: fix
