@@ -1,9 +1,10 @@
-local a = require 'plenary.async_lib'
+local a = require 'plenary.async'
+local Job = require 'plenary.job'
 local curl = require 'plenary.curl'
 local config = require 'github-notifications.config'
 local header = require 'github-notifications.utils.header'
 
-local M = { notifications = {}, ignore = {} }
+local M = { notifications = {}, ignore = {}, gh_status = nil }
 local state = nil
 
 -- Setup user configuration
@@ -11,7 +12,6 @@ M.setup = function(options)
   options = config.set(options)
   state = {
     last_refresh = nil,
-    last_response = nil,
     debounce_duration = options.debounce_duration,
   }
 end
@@ -33,58 +33,82 @@ local debounce = function(fn)
   end
 end
 
+local set_notifications = function(res)
+  local status = res.status
+
+  if status == 200 then
+    local json = vim.fn.json_decode(res.body)
+
+    for _, v in pairs(json) do
+      if M.ignore[v] then
+      else
+        if v ~= nil then
+          table.insert(M.notifications, v)
+        end
+      end
+    end
+
+    -- Reduce the debounce duration if necessary
+    for _, v in pairs(res.headers) do
+      local interval_match = v:match 'x%-poll%-interval: (%d+)'
+      if interval_match then
+        local interval = tonumber(interval_match)
+        local dd = state.debounce_duration
+
+        -- In the latter case, we should revert to the user's config
+        state.debounce_duration = interval > dd and interval or config.get 'debounce_duration'
+      end
+    end
+  elseif status == 401 then
+    vim.notify('Unauthorized request. Ensure username + token are valid', vim.log.levels.ERROR)
+  elseif status == 403 then
+    vim.notify('Forbidden. Ensure username + token are valid', vim.log.levels.ERROR)
+  elseif status == 422 then
+    vim.notify('Validation failure', vim.log.levels.ERROR)
+  end
+end
+
 -- Makes a new get request to the notifications API, refreshing the state variables.
 M.refresh = function()
   debounce(function()
-    a.run(a.async(function()
-      local previous_last_refresh = state.last_refresh
-      local if_modified_since = previous_last_refresh and header.last_modified(previous_last_refresh) or nil
-      state.last_refresh = os.time()
+    a.run(
+      a.wrap(function(update_callback)
+        local previous_last_refresh = state.last_refresh
+        local if_modified_since = previous_last_refresh and header.last_modified(previous_last_refresh) or nil
+        state.last_refresh = os.time()
 
-      state.last_response = curl.get('https://api.github.com/notifications', {
-        accept = 'application/json',
-        auth = config.get 'username' .. ':' .. config.get 'token',
-        headers = {
-          if_modified_since = if_modified_since,
-        },
-      })
+        local gh_status = M.gh_status or vim.api.nvim_eval [[executable('gh')]]
+        if gh_status == 1 then
+          local job = Job:new {
+            command = 'gh',
+            args = { 'api', 'notifications' },
+          }
 
-      local res = state.last_response
-      local status = res.status
+          job:after_success(vim.schedule_wrap(function(j)
+            local notifications = j:result()
+            update_callback {
+              status = 200,
+              body = notifications,
+              headers = {
+                if_modified_since = if_modified_since,
+              },
+            }
+          end))
 
-      if status == 200 then
-        local json = vim.fn.json_decode(res.body)
-
-        for _, v in pairs(json) do
-          if M.ignore[v] then
-          else
-            if v ~= nil then
-              table.insert(M.notifications, v)
-            end
-          end
+          job:start()
+        else
+          local res = curl.get('https://api.github.com/notifications', {
+            accept = 'application/json',
+            auth = config.get 'username' .. ':' .. config.get 'token',
+            headers = {
+              if_modified_since = if_modified_since,
+            },
+          })
+          update_callback(res)
         end
-
-        -- Reduce the debounce duration if necessary
-        for _, v in pairs(res.headers) do
-          local interval_match = v:match 'x%-poll%-interval: (%d+)'
-          if interval_match then
-            local interval = tonumber(interval_match)
-            local dd = state.debounce_duration
-
-            -- In the latter case, we should revert to the user's config
-            state.debounce_duration = interval > dd and interval or config.get 'debounce_duration'
-          end
-        end
-      elseif status == 401 then
-        vim.notify('Unauthorized request. Ensure username + token are valid', vim.log.levels.ERROR)
-      elseif status == 403 then
-        vim.notify('Forbidden. Ensure username + token are valid', vim.log.levels.ERROR)
-      elseif status == 422 then
-        vim.notify('Validation failure', vim.log.levels.ERROR)
-      end
-
-      return
-    end, 1)())
+      end, 1),
+      set_notifications
+    )
   end)()
 end
 
