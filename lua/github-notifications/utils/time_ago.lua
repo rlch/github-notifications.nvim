@@ -21,7 +21,7 @@ end
 ---@param time osdate
 ---@return string
 function M.format(time)
-  local now = os.time()
+  local now = os.time(os.date("!*t"))
   local diff_seconds = os.difftime(now, time)
   if diff_seconds < 45 then
     return language.justnow
