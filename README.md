@@ -1,6 +1,6 @@
 # github-notifications.nvim :bell:
 
-A lightweight, unobstructive, yet WIP neovim plugin for viewing GitHub notifications in your statusline + Telescope popup.
+A lightweight, unobstructive, yet WIP neovim plugin for viewing GitHub notifications in your statusline + Telescope popup. 
 All requests are processed asynchronously, debounced and cached to ensure no delays in your UI! :rocket:
 
 ![Preview](https://imgur.com/F6CzZ8O.png)
@@ -22,7 +22,14 @@ use {
 
 ## Getting Started
 
-Simply call `setup` and you're good to go:
+### Using `gh` CLI (recommended)
+
+Install [the CLI](https://github.com/cli/cli) and you're off!
+
+
+### Using personal access token
+
+Call `setup` with your personal access `token` with the `Notifications` scope. You can make one [here](https://github.com/settings/tokens).
 
 ```lua
 local secrets = require 'secrets'
@@ -33,7 +40,6 @@ require('github-notifications').setup {
 }
 ```
 
-`token` is a personal access token with the `Notifications` scope. You can make one [here](https://github.com/settings/tokens)
 
 **Default config**:
 
