@@ -21,8 +21,7 @@ local debounce = function(fn)
   return function(...)
     if not state then
       return
-    end
-    if not state.last_refresh then
+    elseif not state.last_refresh then
       return fn(...)
     end
 
@@ -41,10 +40,8 @@ local set_notifications = function(res)
 
     for _, v in pairs(json) do
       if M.ignore[v] then
-      else
-        if v ~= nil then
-          table.insert(M.notifications, v)
-        end
+      elseif v ~= nil then
+        table.insert(M.notifications, v)
       end
     end
 
@@ -78,31 +75,30 @@ M.refresh = function()
         state.last_refresh = os.time()
 
         local gh_status = M.gh_status or vim.api.nvim_eval [[executable('gh')]]
-        if gh_status == 1 then
-          local job = Job:new {
-            command = 'gh',
-            args = { 'api', 'notifications' },
-          }
+        M.gh_status = gh_status
 
+        if gh_status == 1 then
+          local args = if_modified_since and { '-H', '"If-Modified-Since: ' .. if_modified_since .. '"' } or {}
+          for _, v in pairs { 'api', 'notifications' } do
+            table.insert(args, v)
+          end
+
+          local job = Job:new { command = 'gh', args = args }
           job:after_success(vim.schedule_wrap(function(j)
             local notifications = j:result()
+            -- TODO: handle other statuses
             update_callback {
               status = 200,
               body = notifications,
-              headers = {
-                if_modified_since = if_modified_since,
-              },
+              headers = {},
             }
           end))
-
           job:start()
         else
           local res = curl.get('https://api.github.com/notifications', {
             accept = 'application/json',
             auth = config.get 'username' .. ':' .. config.get 'token',
-            headers = {
-              if_modified_since = if_modified_since,
-            },
+            headers = { if_modified_since = if_modified_since },
           })
           update_callback(res)
         end
