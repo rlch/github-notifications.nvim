@@ -15,7 +15,7 @@ M.read_notification = function(notification)
       if ghn.gh_status == 1 then
         local job = Job:new {
           command = 'gh',
-          args = { 'api', 'notifications/threads/' .. tostring(id) },
+          args = { 'api', '-X', 'PATCH', 'notifications/threads/' .. tostring(id) },
         }
 
         job:after_success(vim.schedule_wrap(function()
