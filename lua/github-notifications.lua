@@ -2,7 +2,7 @@ local a = require 'plenary.async'
 local Job = require 'plenary.job'
 local curl = require 'plenary.curl'
 local config = require 'github-notifications.config'
-local header = require 'github-notifications.utils.header'
+local header = require 'github-notifications.utils.date'.last_modified
 
 local M = { notifications = {}, ignore = {}, gh_status = nil }
 local state = nil

@@ -3,6 +3,7 @@ local config = require 'github-notifications.config'
 local previewer = require 'github-notifications.telescope.previewer'
 local format_type = require 'github-notifications.utils.format_type'
 local commands = require 'github-notifications.telescope.commands'
+local iso8601_to_unix = require 'github-notifications.utils.date'.iso8601_to_unix
 
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
@@ -73,7 +74,11 @@ M.notifications = function(opts)
       entry_maker = entry_maker(),
     },
     previewer = previewer.new(opts),
-    sorter = sorters.get_generic_fuzzy_sorter(),
+    sorter = sorters.Sorter:new{
+      scoring_function = function(_, _, _, entry)
+        return -iso8601_to_unix(entry.value.updated_at)
+      end
+    },
     attach_mappings = function(_, map)
       for slug, key in pairs(config.get 'mappings') do
         map('n', key, execute_command(slug))

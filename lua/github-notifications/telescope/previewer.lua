@@ -3,7 +3,7 @@ local ts_utils = require 'telescope.utils'
 local defaulter = ts_utils.make_default_callable
 local format_type = require 'github-notifications.utils.format_type'
 local time_ago = require 'github-notifications.utils.time_ago'
-local parse_iso8601 = require 'github-notifications.utils.parse_iso8601'
+local iso8601_to_unix = require 'github-notifications.utils.date'.iso8601_to_unix
 
 local a = vim.api
 
@@ -18,7 +18,7 @@ return defaulter(function(_)
       local lines = {
         '# ' .. entry.value.subject.title,
         '> ' .. format_type(entry.value.subject.type) .. ' ' .. entry.value.subject.type,
-        '> Updated: ' .. time_ago.format(parse_iso8601(entry.value.updated_at)),
+        '> Updated: ' .. time_ago.format(iso8601_to_unix(entry.value.updated_at)),
         '',
         '- 爵' .. entry.value.subject.url,
         '-  ' .. entry.value.repository.full_name,
