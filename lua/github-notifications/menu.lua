@@ -22,6 +22,8 @@ local execute_command = function(slug)
     cmd = commands.open_in_browser
   elseif slug == 'hide' then
     cmd = commands.hide
+  elseif slug == 'mark_all_read' then
+    cmd = commands.read_all_notifications
   end
 
   return function(_)
@@ -60,9 +62,9 @@ M.notifications = function(opts)
   ghn.refresh()
 
   local results = {}
-  for k, v in pairs(ghn.notifications) do
+  for _, v in pairs(ghn.notifications) do
     if not ghn.ignore[v] then
-      results[k] = v
+      table.insert(results, v)
     end
   end
   opts = opts and not vim.tbl_isempty(opts) and opts or themes.get_dropdown {}
@@ -82,6 +84,10 @@ M.notifications = function(opts)
     attach_mappings = function(_, map)
       for slug, key in pairs(config.get 'mappings') do
         map('n', key, execute_command(slug))
+      end
+
+      for slug, key in pairs(config.get 'prompt_mappings') do
+        map('i', key, execute_command(slug))
       end
 
       return true

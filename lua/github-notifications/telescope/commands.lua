@@ -15,7 +15,7 @@ M.read_notification = function(notification)
       if ghn.gh_status == 1 then
         local job = Job:new {
           command = 'gh',
-          args = { 'api', '-X', 'PATCH', 'notifications/threads/' .. tostring(id) },
+          args = { 'api', '-X', 'PATCH', '/notifications/threads/' .. tostring(id) },
         }
 
         job:after_success(vim.schedule_wrap(function()
@@ -23,6 +23,7 @@ M.read_notification = function(notification)
         end))
 
         job:start()
+        update_state_callback()
       else
         curl.patch('https://api.github.com/notifications/threads/' .. tostring(id), {
           auth = config.get 'username' .. ':' .. config.get 'token',
@@ -36,7 +37,44 @@ M.read_notification = function(notification)
           ghn.notifications[k].unread = false
           -- Hide the next time the popup is opened (WIP)
           -- ghn.ignore[v] = true
+
+          -- Set the cursor to the next position in the buffer (WIP)
+          --[[ local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+          local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+          if #lines < col + 2 then
+            vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+          end ]]
         end
+      end
+    end
+  )
+end
+
+M.read_all_notifications = function()
+  a.run(
+    a.wrap(function(update_state_callback)
+      if ghn.gh_status == 1 then
+        local job = Job:new {
+          command = 'gh',
+          args = { 'api', '-X', 'PUT', '/notifications' },
+        }
+
+        job:after_success(vim.schedule_wrap(function()
+          update_state_callback()
+        end))
+
+        job:start()
+        update_state_callback()
+      else
+        curl.put('https://api.github.com/notifications', {
+          auth = config.get 'username' .. ':' .. config.get 'token',
+        })
+        update_state_callback()
+      end
+    end, 1),
+    function()
+      for k, _ in pairs(ghn.notifications) do
+        ghn.notifications[k].unread = false
       end
     end
   )
