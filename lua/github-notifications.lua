@@ -125,9 +125,15 @@ M.statusline_notification_count = function()
   return config.get 'icon' .. ' ' .. tostring(count)
 end
 
-M.statusline_notification = {
-  icon = config.get 'icon',
-  count = notification_count(),
-}
+M.statusline_notifications = function()
+  if state ~= nil then
+    M.refresh()
+  end
+
+  return {
+    icon = config.get 'icon',
+    count = notification_count(),
+  }
+end
 
 return M
