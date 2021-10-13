@@ -49,11 +49,15 @@ local defaults = {
   username = nil, -- GitHub username
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline
+  hide_statusline_on_all_read = true,
   mappings = {
     mark_read = '<CR>',
     -- open_in_browser = 'o', (WIP)
     -- hide = 'd', (WIP)
   },
+  prompt_mappings = {
+    mark_all_read = '<C-r>'
+  } -- keymaps that apply on a Telescope prompt level (insert mode)
 }
 ```
 
@@ -74,6 +78,21 @@ require('lualine').setup {
   ...
 }
 ```
+
+You can also use `statusline_notifications()` and build your own formatter:
+
+```lua
+  local ghn_formatter = function()
+    local data = require('github-notifications').statusline_notifications()
+    if data.count > 10 then
+      return data.icon .. ' purge time'
+    elseif data.count == 0 then
+      return ''
+    end
+    return data.icon .. tostring(data.count)
+  end
+```
+
 
 ### Telescope
 
