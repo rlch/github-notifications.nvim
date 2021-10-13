@@ -5,11 +5,15 @@ local defaults = {
   username = nil, -- GitHub username
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline
+  hide_statusline_on_all_read = true,
   mappings = {
     mark_read = '<CR>',
     -- open_in_browser = 'o', (WIP)
     -- hide = 'd', (WIP)
-  },
+  }, -- keymaps that apply on a Telescope entry level
+  prompt_mappings = {
+    mark_all_read = '<C-r>'
+  } -- keymaps that apply on a Telescope prompt level (insert mode)
 }
 local mt = { __index = defaults }
 local config = setmetatable({}, mt)

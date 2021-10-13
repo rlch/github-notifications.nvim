@@ -104,11 +104,30 @@ M.refresh = function()
   end)()
 end
 
+local notification_count = function()
+  local count = 0
+  for _, v in pairs(M.notifications) do
+    count = count + (v.unread and 1 or 0)
+  end
+  return count
+end
+
 M.statusline_notification_count = function()
   if state ~= nil then
     M.refresh()
   end
-  return config.get 'icon' .. ' ' .. tostring(#M.notifications)
+
+  local count = notification_count()
+
+  if config.get 'hide_statusline_on_all_read' and count == 0 then
+    return ''
+  end
+  return config.get 'icon' .. ' ' .. tostring(count)
 end
+
+M.statusline_notification = {
+  icon = config.get 'icon',
+  count = notification_count(),
+}
 
 return M
