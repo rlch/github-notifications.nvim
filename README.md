@@ -45,11 +45,12 @@ require('github-notifications').setup {
 
 ```lua
 local defaults = {
-  debounce_duration = 60, -- Minimum time until next refresh
   username = nil, -- GitHub username
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline
   hide_statusline_on_all_read = true,
+  debounce_duration = 60, -- Minimum time until next refresh
+  cache = false, -- Opt in/out of caching
   mappings = {
     mark_read = '<CR>',
     -- open_in_browser = 'o', (WIP)
