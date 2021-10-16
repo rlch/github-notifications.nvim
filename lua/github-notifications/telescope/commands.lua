@@ -35,8 +35,10 @@ M.read_notification = function(notification)
       for k, v in pairs(ghn.notifications) do
         if v == notification.value then
           ghn.notifications[k].unread = false
-          -- Hide the next time the popup is opened (WIP)
-          ghn.ignore[v.id] = true
+
+          if config.get'hide_entry_on_read' then
+            ghn.ignore[v.id] = true
+          end
 
           -- Set the cursor to the next position in the buffer (WIP)
           --[[ local row, col = unpack(vim.api.nvim_win_get_cursor(0))

@@ -49,6 +49,7 @@ local defaults = {
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline
   hide_statusline_on_all_read = true,
+  hide_entry_on_read = true, -- Whether to hide the Telescope entry after reading
   debounce_duration = 60, -- Minimum time until next refresh
   cache = false, -- Opt in/out of caching
   mappings = {
@@ -118,9 +119,9 @@ I'm aware my API design is abysmal
 - [ ] Add support for CI status for current branch in statusline
 - [ ] Redirect to follow-up URL (instead of API url)
 - [ ] Refresh UI on state changes (i.e. when marking notifications as read)
-- [ ] Add highlights to Telescope entries
+- [x] Add highlights to Telescope entries
 - [ ] Improve Telescope preview UI instead of being lazy with markdown
-- [ ] Hide notifications without Telescope shitting itself
+- [x] Hide notifications without Telescope shitting itself
 
 ## Contributing :ok_hand:
 
