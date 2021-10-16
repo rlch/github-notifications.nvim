@@ -97,8 +97,7 @@ M.hide = function(notification, bufnr)
       ghn.ignore[k] = true
 
       local picker = action_state.get_current_picker(bufnr)
-      local row = picker:get_selection_row()
-      picker:remove_selection(row)
+      picker:delete_selection(function() end)
     end
   end
 end
