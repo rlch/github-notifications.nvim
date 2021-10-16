@@ -49,13 +49,13 @@ local defaults = {
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline
   hide_statusline_on_all_read = true,
-  hide_entry_on_read = true, -- Whether to hide the Telescope entry after reading
+  hide_entry_on_read = false, -- Whether to hide the Telescope entry after reading (buggy)
   debounce_duration = 60, -- Minimum time until next refresh
   cache = false, -- Opt in/out of caching
   mappings = {
     mark_read = '<CR>',
+    hide = 'd', -- remove from Telescope picker, but don't mark as read
     -- open_in_browser = 'o', (WIP)
-    -- hide = 'd', (WIP)
   },
   prompt_mappings = {
     mark_all_read = '<C-r>'

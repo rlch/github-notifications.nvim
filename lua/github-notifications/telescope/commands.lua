@@ -46,12 +46,13 @@ M.read_notification = function(notification, bufnr)
           done = true
           ghn.notifications[k].unread = false
 
+          local picker = action_state.get_current_picker(bufnr)
           if config.get 'hide_entry_on_read' then
             ghn.ignore[v.id] = true
+            picker:delete_selection(function() end)
+          else
+            picker:move_selection(0) -- refreshes current entry
           end
-
-          local picker = action_state.get_current_picker(bufnr)
-          picker:move_selection(0) -- refreshes current entry
           picker:move_selection(1) -- move to next entry
         end
       end
@@ -68,12 +69,13 @@ M.read_all_notifications = function(_, bufnr)
           args = { 'api', '-X', 'PUT', '/notifications' },
         }
 
-        job:after_success(vim.schedule_wrap(function()
-          update_state_callback()
+        update_state_callback()
+
+        job:after_failure(vim.schedule_wrap(function(j)
+          vim.notify(j:stderr_result(), vim.log.levels.ERROR)
         end))
 
         job:start()
-        update_state_callback()
       else
         curl.put('https://api.github.com/notifications', {
           auth = config.get 'username' .. ':' .. config.get 'token',
@@ -82,8 +84,12 @@ M.read_all_notifications = function(_, bufnr)
       end
     end, 1),
     function()
+      local should_hide = config.get 'hide_entry_on_read'
       for k, _ in pairs(ghn.notifications) do
         ghn.notifications[k].unread = false
+        if should_hide then
+          ghn.ignore[k] = true
+        end
       end
       actions.close(bufnr)
     end
@@ -91,13 +97,13 @@ M.read_all_notifications = function(_, bufnr)
 end
 
 M.hide = function(notification, bufnr)
+  local picker = action_state.get_current_picker(bufnr)
   for k, _ in pairs(ghn.notifications) do
     if k == notification.ordinal then
-      ghn.notifications[k] = nil
-      ghn.ignore[k] = true
-
-      local picker = action_state.get_current_picker(bufnr)
-      picker:delete_selection(function() end)
+      picker:delete_selection(function()
+        ghn.notifications[k] = nil
+        ghn.ignore[k] = true
+      end)
     end
   end
 end
