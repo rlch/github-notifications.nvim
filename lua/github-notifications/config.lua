@@ -6,6 +6,7 @@ local defaults = {
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline
   hide_statusline_on_all_read = true,
+  cache = true, -- Opt in/out of caching
   mappings = {
     mark_read = '<CR>',
     -- open_in_browser = 'o', (WIP)

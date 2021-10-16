@@ -67,7 +67,9 @@ M.refresh = function()
     a.run(
       a.wrap(function(update_callback)
         local previous_last_refresh = state.last_refresh
-        local if_modified_since = previous_last_refresh and generate_last_modified(previous_last_refresh) or nil
+        local if_modified_since = (previous_last_refresh and config.get 'cache')
+            and generate_last_modified(previous_last_refresh)
+          or nil
         state.last_refresh = os.time()
 
         local gh_status = M.gh_status or vim.api.nvim_eval [[executable('gh')]]
