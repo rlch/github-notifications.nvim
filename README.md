@@ -104,7 +104,7 @@ Optionally load the extension using:
 require('telescope').load_extension 'ghn'
 ```
 
-So that `require('telescope').extensions.ghn.ghn()` can open the popup.
+So that `require('telescope').extensions.ghn.notifications()` can open the popup.
 
 Otherwise, you can simply call:
 

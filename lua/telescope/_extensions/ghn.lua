@@ -7,6 +7,7 @@ end
 
 return telescope.register_extension {
   exports = {
-    ghn = menu.notifications,
+    ghn = menu.notifications, -- allow for backwards compatability
+    notifications = menu.notifications,
   },
 }
