@@ -5,9 +5,12 @@ local curl = require 'plenary.curl'
 local ghn = require 'github-notifications'
 local config = require 'github-notifications.config'
 
+local actions = require 'telescope.actions'
+local action_state = require 'telescope.actions.state'
+
 local M = {}
 
-M.read_notification = function(notification)
+M.read_notification = function(notification, bufnr)
   local id = notification.ordinal
 
   a.run(
@@ -18,12 +21,17 @@ M.read_notification = function(notification)
           args = { 'api', '-X', 'PATCH', '/notifications/threads/' .. tostring(id) },
         }
 
-        job:after_success(vim.schedule_wrap(function()
+        --[[ job:after_success(vim.schedule_wrap(function(j)
           update_state_callback()
+        end)) ]]
+
+        update_state_callback()
+
+        job:after_failure(vim.schedule_wrap(function(j)
+          vim.notify(j:stderr_result(), vim.log.levels.ERROR)
         end))
 
         job:start()
-        update_state_callback()
       else
         curl.patch('https://api.github.com/notifications/threads/' .. tostring(id), {
           auth = config.get 'username' .. ':' .. config.get 'token',
@@ -32,27 +40,26 @@ M.read_notification = function(notification)
       end
     end, 1),
     function()
+      local done = false
       for k, v in pairs(ghn.notifications) do
-        if v == notification.value then
+        if not done and k == notification.ordinal then
+          done = true
           ghn.notifications[k].unread = false
 
-          if config.get'hide_entry_on_read' then
+          if config.get 'hide_entry_on_read' then
             ghn.ignore[v.id] = true
           end
 
-          -- Set the cursor to the next position in the buffer (WIP)
-          --[[ local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-          local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-          if #lines < col + 2 then
-            vim.api.nvim_win_set_cursor(0, { row, col + 1 })
-          end ]]
+          local picker = action_state.get_current_picker(bufnr)
+          picker:move_selection(0) -- refreshes current entry
+          picker:move_selection(1) -- move to next entry
         end
       end
     end
   )
 end
 
-M.read_all_notifications = function()
+M.read_all_notifications = function(_, bufnr)
   a.run(
     a.wrap(function(update_state_callback)
       if ghn.gh_status == 1 then
@@ -78,16 +85,20 @@ M.read_all_notifications = function()
       for k, _ in pairs(ghn.notifications) do
         ghn.notifications[k].unread = false
       end
+      actions.close(bufnr)
     end
   )
 end
 
--- TODO: fix
-M.hide = function(notification)
+M.hide = function(notification, bufnr)
   for k, _ in pairs(ghn.notifications) do
-    if k == notification.value.id then
+    if k == notification.ordinal then
       ghn.notifications[k] = nil
       ghn.ignore[k] = true
+
+      local picker = action_state.get_current_picker(bufnr)
+      local row = picker:get_selection_row()
+      picker:remove_selection(row)
     end
   end
 end

@@ -118,7 +118,7 @@ I'm aware my API design is abysmal
 
 - [ ] Add support for CI status for current branch in statusline
 - [ ] Redirect to follow-up URL (instead of API url)
-- [ ] Refresh UI on state changes (i.e. when marking notifications as read)
+- [x] Refresh UI on state changes (i.e. when marking notifications as read)
 - [x] Add highlights to Telescope entries
 - [ ] Improve Telescope preview UI instead of being lazy with markdown
 - [x] Hide notifications without Telescope shitting itself

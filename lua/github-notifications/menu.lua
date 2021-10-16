@@ -14,7 +14,7 @@ local entry_display = require 'telescope.pickers.entry_display'
 
 local M = {}
 
-local execute_command = function(slug)
+local execute_command = function(prompt_bufnr, slug)
   local cmd
   if slug == 'mark_read' then
     cmd = commands.read_notification
@@ -28,7 +28,7 @@ local execute_command = function(slug)
 
   return function(_)
     local selection = action_state.get_selected_entry()
-    cmd(selection)
+    cmd(selection, prompt_bufnr)
   end
 end
 
@@ -83,13 +83,13 @@ M.notifications = function(opts)
         return -iso8601_to_unix(entry.value.updated_at)
       end
     },
-    attach_mappings = function(_, map)
+    attach_mappings = function(prompt_bufnr, map)
       for slug, key in pairs(config.get 'mappings') do
-        map('n', key, execute_command(slug))
+        map('n', key, execute_command(prompt_bufnr, slug))
       end
 
       for slug, key in pairs(config.get 'prompt_mappings') do
-        map('i', key, execute_command(slug))
+        map('i', key, execute_command(prompt_bufnr, slug))
       end
 
       return true
