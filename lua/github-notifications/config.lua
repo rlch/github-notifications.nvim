@@ -8,6 +8,7 @@ local defaults = {
   hide_entry_on_read = false, -- Whether to hide the Telescope entry after reading (buggy)
   debounce_duration = 60, -- Minimum time until next refresh
   cache = false, -- Opt in/out of caching
+  sort_unread_first = true,
   mappings = {
     mark_read = '<CR>',
     hide = 'd',

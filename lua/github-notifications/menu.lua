@@ -71,6 +71,7 @@ M.notifications = function(opts)
   end
   opts = opts and not vim.tbl_isempty(opts) and opts or themes.get_dropdown {}
 
+  local sort_unread_first = config.get'sort_unread_first'
   pickers.new(opts, {
     prompt_title = 'GitHub Notifications',
     finder = finders.new_table {
@@ -80,7 +81,11 @@ M.notifications = function(opts)
     previewer = previewer.new(opts),
     sorter = sorters.Sorter:new{
       scoring_function = function(_, _, _, entry)
-        return -iso8601_to_unix(entry.value.updated_at)
+        local score = -iso8601_to_unix(entry.value.updated_at)
+        if sort_unread_first and not entry.value.unread then
+          return score + 2147483647
+        end
+        return score
       end
     },
     attach_mappings = function(prompt_bufnr, map)
