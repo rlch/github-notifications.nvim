@@ -10,8 +10,8 @@ local defaults = {
   cache = false, -- Opt in/out of caching
   mappings = {
     mark_read = '<CR>',
+    hide = 'd',
     -- open_in_browser = 'o', (WIP)
-    -- hide = 'd', (WIP)
   }, -- keymaps that apply on a Telescope entry level
   prompt_mappings = {
     mark_all_read = '<C-r>'
