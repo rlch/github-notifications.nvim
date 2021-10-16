@@ -34,10 +34,14 @@ local set_notifications = function(res)
   if status == 200 then
     local json = vim.fn.json_decode(res.body)
 
+    for k, _ in pairs(M.notifications) do
+      M.notifications[k] = nil
+    end
+
     for _, v in pairs(json) do
-      if M.ignore[v] then
+      if M.ignore[v.id] then
       elseif v ~= nil then
-        table.insert(M.notifications, v)
+        M.notifications[v.id] = v
       end
     end
 

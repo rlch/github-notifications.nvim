@@ -43,16 +43,17 @@ local entry_maker = function()
     }
 
     return displayer {
-      { format_type(en.subject.type), 'Type' },
-      { tostring(en.subject.title), 'Comment' },
+      { en.status, 'Type' },
+      { en.label, en.value.unread and 'Variable' or 'Comment' },
     }
   end
 
   return function(entry)
     return {
       ordinal = entry.id,
-      label = entry.subject.title,
-      display = make_display(entry),
+      label = tostring(entry.subject.title),
+      status = format_type(entry.subject.type),
+      display = make_display,
       value = entry,
     }
   end
@@ -62,8 +63,9 @@ M.notifications = function(opts)
   ghn.refresh()
 
   local results = {}
-  for _, v in pairs(ghn.notifications) do
-    if not ghn.ignore[v] then
+  for k, v in pairs(ghn.notifications) do
+    if not ghn.ignore[k] then
+      -- Telescope doesn't instantiate entries that have high in magnitude keys ?? whack
       table.insert(results, v)
     end
   end
