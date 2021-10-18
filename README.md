@@ -26,6 +26,8 @@ use {
 
 Install [the CLI](https://github.com/cli/cli) and you're off!
 
+Make sure you authenticate with `gh auth login`.
+
 
 ### Using personal access token
 
