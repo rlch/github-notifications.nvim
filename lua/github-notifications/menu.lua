@@ -93,6 +93,7 @@ M.notifications = function(opts)
         map('n', key, execute_command(prompt_bufnr, slug))
       end
 
+      map('i', '<CR>', execute_command(prompt_bufnr, 'mark_read'))
       for slug, key in pairs(config.get 'prompt_mappings') do
         map('i', key, execute_command(prompt_bufnr, slug))
       end
