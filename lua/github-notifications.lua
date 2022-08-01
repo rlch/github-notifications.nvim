@@ -34,6 +34,14 @@ local set_notifications = function(res)
   if status == 200 then
     local json = vim.fn.json_decode(res.body)
 
+    if next(M.notifications) ~= nil then
+      for _, v in pairs(json) do
+        if not M.notifications[v.id] then
+          config.get('hooks').on_notification(v)
+        end
+      end
+    end
+
     for k, _ in pairs(M.notifications) do
       M.notifications[k] = nil
     end

@@ -9,14 +9,17 @@ local defaults = {
   debounce_duration = 60, -- Minimum time until next refresh
   cache = false, -- Opt in/out of caching
   sort_unread_first = true,
+  hooks = {
+    on_notification = function(_notification) end,
+  },
   mappings = {
     mark_read = '<CR>',
     hide = 'd',
     -- open_in_browser = 'o', (WIP)
   }, -- keymaps that apply on a Telescope entry level
   prompt_mappings = {
-    mark_all_read = '<C-r>'
-  } -- keymaps that apply on a Telescope prompt level (insert mode)
+    mark_all_read = '<C-r>',
+  }, -- keymaps that apply on a Telescope prompt level (insert mode)
 }
 local mt = { __index = defaults }
 local config = setmetatable({}, mt)
