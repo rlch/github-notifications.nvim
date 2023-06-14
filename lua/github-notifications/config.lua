@@ -1,6 +1,7 @@
 local M = {}
 
 local defaults = {
+  github_api_endpoint = 'https://api.github.com', -- Github API Endpoint
   username = nil, -- GitHub username
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline
@@ -15,8 +16,8 @@ local defaults = {
     -- open_in_browser = 'o', (WIP)
   }, -- keymaps that apply on a Telescope entry level
   prompt_mappings = {
-    mark_all_read = '<C-r>'
-  } -- keymaps that apply on a Telescope prompt level (insert mode)
+    mark_all_read = '<C-r>',
+  }, -- keymaps that apply on a Telescope prompt level (insert mode)
 }
 local mt = { __index = defaults }
 local config = setmetatable({}, mt)

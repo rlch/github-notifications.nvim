@@ -81,7 +81,7 @@ M.refresh = function()
 
         if gh_status == 1 then
           local args = if_modified_since and { '-H', '"If-Modified-Since: ' .. if_modified_since .. '"' } or {}
-          for _, v in pairs { 'api', 'notifications' } do
+          for _, v in pairs { 'api', config.get 'github_api_endpoint' .. '/notifications' } do
             table.insert(args, v)
           end
 
@@ -97,7 +97,7 @@ M.refresh = function()
           end))
           job:start()
         else
-          local res = curl.get('https://api.github.com/notifications', {
+          local res = curl.get(config.get 'github_api_endpoint' .. '/notifications', {
             accept = 'application/json',
             auth = config.get 'username' .. ':' .. config.get 'token',
             headers = { if_modified_since = if_modified_since },
