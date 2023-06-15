@@ -47,6 +47,7 @@ require('github-notifications').setup {
 
 ```lua
 local defaults = {
+  github_api_endpoint = 'https://api.github.com', -- Github API Endpoint
   username = nil, -- GitHub username
   token = nil, -- Your personal access token with `notifications` scope
   icon = '', -- Icon to be shown in statusline

@@ -33,7 +33,7 @@ M.read_notification = function(notification, bufnr)
 
         job:start()
       else
-        curl.patch('https://api.github.com/notifications/threads/' .. tostring(id), {
+        curl.patch(config.get 'github_api_endpoint' .. '/notifications/threads/' .. tostring(id), {
           auth = config.get 'username' .. ':' .. config.get 'token',
         })
         update_state_callback()
@@ -77,7 +77,7 @@ M.read_all_notifications = function(_, bufnr)
 
         job:start()
       else
-        curl.put('https://api.github.com/notifications', {
+        curl.put(config.get 'github_api_endpoint' .. '/notifications', {
           auth = config.get 'username' .. ':' .. config.get 'token',
         })
         update_state_callback()
